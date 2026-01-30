@@ -1,0 +1,8 @@
+body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+.container { border: 1px solid #ccc; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.status-bar { margin-bottom: 1rem; font-weight: bold; font-size: 0.9em; }
+.add-todo { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+#new-todo { flex: 1; padding: 0.5rem; }
+ul { list-style: none; padding: 0; }
+li { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+li.done span { text-decoration: line-through; color: #888; }

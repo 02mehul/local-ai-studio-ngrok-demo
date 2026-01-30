@@ -1,0 +1,20 @@
+# Environment variables
+.env
+
+# Dependencies
+node_modules
+.venv
+__pycache__
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+ngrok.log
+ngrok_tunnels.json
+ngrok_url.txt
+
+# Supabase
+supabase/.temp
