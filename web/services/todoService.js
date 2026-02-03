@@ -50,18 +50,15 @@ export class TodoService {
     }
 
     async getTodos() {
-        // GET /rest/v1/todos?select=*&order=created_at.asc
-        return this._fetch(`${API_ENDPOINTS.TODOS}?select=*&order=created_at.asc`);
+        // GET /rest/v1/todos?select=*&order=priority.desc,id.desc
+        return this._fetch(`${API_ENDPOINTS.TODOS}?select=*&order=priority.desc,id.desc`);
     }
 
-    async createTodo(title) {
+    async createTodo(title, priority = 0) {
         // POST /rest/v1/todos
-        // Body: [{ title: "...", done: false }]
-        // PostgREST expects an array for bulk insert, or single object if Prefer header allows. 
-        // But convention often uses object or array. Let's send object.
         return this._fetch(API_ENDPOINTS.TODOS, {
             method: 'POST',
-            body: JSON.stringify({ title, done: false })
+            body: JSON.stringify({ title, done: false, priority })
         });
     }
 

@@ -5,6 +5,7 @@ import { CONFIG } from './config.js';
 const statusEl = document.getElementById('status-bar');
 const listEl = document.getElementById('todo-list');
 const inputEl = document.getElementById('new-todo');
+const priorityEl = document.getElementById('new-priority');
 const addBtn = document.getElementById('add-btn');
 
 // Status Check (Visual only)
@@ -40,6 +41,19 @@ function renderTodos(todos) {
         const span = document.createElement('span');
         span.textContent = todo.title;
 
+        if (todo.priority > 0) {
+            const badge = document.createElement('span');
+            badge.textContent = `P${todo.priority}`;
+            badge.style.marginLeft = '8px';
+            badge.style.fontSize = '0.8em';
+            badge.style.padding = '2px 6px';
+            badge.style.borderRadius = '4px';
+            badge.style.backgroundColor = todo.priority === 3 ? '#ffe4e6' : (todo.priority === 2 ? '#ffedd5' : '#f1f5f9');
+            badge.style.color = todo.priority === 3 ? '#e11d48' : (todo.priority === 2 ? '#c2410c' : '#475569');
+            badge.style.fontWeight = 'bold';
+            span.appendChild(badge);
+        }
+
         const delBtn = document.createElement('button');
         delBtn.textContent = 'X';
         delBtn.style.marginLeft = '10px';
@@ -70,8 +84,13 @@ async function addTodo() {
     if (!title) return;
 
     try {
-        await todoService.createTodo(title);
+        const priorityVal = priorityEl ? priorityEl.value : '0';
+        console.log('Selected Priority Raw:', priorityVal);
+        const priority = parseInt(priorityVal) || 0;
+        console.log('Sending Priority:', priority);
+        await todoService.createTodo(title, priority);
         inputEl.value = '';
+        priorityEl.value = '0';
         fetchTodos();
     } catch (e) {
         console.error("Failed to add todo", e);

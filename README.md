@@ -24,6 +24,63 @@ Run the helper script. It initializes Supabase, starts the web server, opens an 
 
 ## 🤖 How to use with Google AI Studio
 
+### 1. Generating Migrations (Schema Changes)
+If you need to change the database schema (e.g., adding columns), use this **exact prompt** to ensure AI Studio generates valid Supabase migrations:
+
+> You are acting as a Supabase migration generator for this project.
+> 
+> RULES YOU MUST FOLLOW:
+> 
+> 1) You must NEVER modify existing migration files.
+>    - Always create a NEW migration file.
+> 
+> 2) You must output:
+>    - The EXACT filename to create
+>    - The FULL SQL content of that file
+>    - Nothing else outside the format below
+> 
+> 3) Filename rules:
+>    - Path must be: supabase/migrations/
+>    - Name must start with timestamp: YYYYMMDDHHMMSS
+>    - Use descriptive name in snake_case
+>    Example:
+>    supabase/migrations/20250203121500_add_priority_to_todos.sql
+> 
+> 4) SQL rules:
+>    - Must be valid Supabase Postgres SQL
+>    - Must be idempotent and safe
+>    - Must include:
+>      - Table changes
+>      - Indexes if needed
+>      - RLS policy updates if required
+>    - Do NOT drop data unless explicitly asked
+> 
+> 5) Style rules:
+>    - Add comments at top explaining intent
+>    - Use IF NOT EXISTS where possible
+>    - Follow existing schema conventions
+> 
+> ---
+> 
+> TASK:
+> 
+> Create a migration that implements this change:
+> 
+> [DESCRIBE YOUR CHANGE HERE, e.g. Add a new column priority integer default 0 to the todos table]
+> 
+> ---
+> 
+> REQUIRED OUTPUT FORMAT (follow exactly):
+> 
+> FILENAME:
+> <path and filename>
+> 
+> SQL:
+> ```sql
+> <full sql content>
+> ```
+
+### 2. Developing the App
 To let AI Studio write code for your local database, it needs to know your API structure and your public Ngrok URL.
 
 1.  **Start the stack** (Step 2 above).
@@ -53,6 +110,7 @@ To let AI Studio write code for your local database, it needs to know your API s
             - List todos
             - Add new todo
             - Toggle done state
+            - Priority Support (High, Medium, Low)
             - Delete todo
             - Loading states
             - Error handling
