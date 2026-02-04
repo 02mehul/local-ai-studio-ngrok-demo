@@ -13,6 +13,9 @@ Start-Process ngrok -ArgumentList "http 54321" -WindowStyle Minimized
 Write-Host "---------------------------------------------------"
 Write-Host "✅ Stack Started!"
 Write-Host "---------------------------------------------------"
+Write-Host "Starting Migration Watcher..."
+Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File scripts/watch_migrations.ps1" -WindowStyle Minimized
+Write-Host "---------------------------------------------------"
 Write-Host "Web UI:    http://localhost:8000"
 Write-Host "Supabase:  http://127.0.0.1:54323 (Studio)"
 Write-Host "API:       http://127.0.0.1:54321"
