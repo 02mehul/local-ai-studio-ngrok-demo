@@ -18,3 +18,12 @@ ngrok_url.txt
 
 # Supabase
 supabase/.temp
+
+# Security
+web/config.js
+
+# Documentation & Scripts
+create_slides.js
+GitHub Connection Troubleshooting.pdf
+github_troubleshooting.html
+github_troubleshooting.md
