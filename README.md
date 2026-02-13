@@ -16,6 +16,51 @@ Imagine your project is a **Remote Control Car**:
 
 ---
 
+## 📁 Project Structure
+
+```
+local-ai-studio-ngrok-demo/
+├── web/                          # Local vanilla JS frontend
+│   ├── index.html                # Main HTML (with dynamic markers)
+│   ├── app.js                    # App logic (with dynamic markers)
+│   ├── styles.css                # Styling (CSS Grid layout)
+│   ├── config.js                 # Supabase keys (git-ignored)
+│   └── services/
+│       └── todoService.js        # API service (with dynamic markers)
+├── lovable/
+│   └── todo-sanctuary/           # Cloned Lovable repo (see below)
+│       └── db/migrations/        # Migration source folder (watched)
+├── supabase/
+│   └── migrations/               # Local Supabase migrations (target)
+├── scripts/
+│   ├── watch_migrations.ps1      # Migration watcher script
+│   └── scaffold_ui.js            # Auto UI scaffolding script
+├── start_safe.bat                # Main startup script
+├── start_dev.ps1                 # Alternative PowerShell startup
+└── prompts_used_in_migrations.txt # Prompts to generate migrations in Lovable
+```
+
+---
+
+## 🔗 Lovable Repository (todo-sanctuary)
+
+The `lovable/todo-sanctuary` folder contains a **clone** of the Lovable-generated frontend project.
+
+### How to Clone
+
+```bash
+cd lovable
+git clone https://github.com/02mehul/todo-sanctuary
+```
+
+This gives you the Lovable project locally, including any migration files that Lovable generates in `db/migrations/`.
+
+### Why We Clone It
+
+When you ask Lovable AI to create database migrations (e.g., adding a new column), it generates `.sql` files inside its own project at `db/migrations/`. By cloning this repo locally, our **Migration Watcher** script can detect these new files and automatically sync them to the local Supabase database.
+
+---
+
 ## 🚀 Step-by-Step Setup Guide
 
 Follow these instructions to start the project.
@@ -29,24 +74,32 @@ Before you begin, ensure you have these 4 tools installed:
 4.  **Ngrok**: [Download Here](https://ngrok.com/).
     *   *Important*: After installing, run `ngrok config add-authtoken <your-token>` in your terminal.
 
-### Phase 2: Start the Engine
+### Phase 2: Clone the Lovable Repository
+
+```bash
+cd lovable
+git clone https://github.com/02mehul/todo-sanctuary
+```
+
+### Phase 3: Start the Engine
 We have a "Magic Script" that starts everything for you.
 
 1.  Open **PowerShell** (or VS Code Terminal).
 2.  Navigate to this project folder.
 3.  Run this command:
     ```powershell
-    .\start_dev.ps1
+    .\start_safe.bat
     ```
 4.  **Wait**. The first time you run this, it might take a few minutes to download the Database tools (Docker images).
 
 **What the script does:**
-*   ✅ Starts a Local Web Server.
+*   ✅ Starts a Local Web Server (port 8000).
 *   ✅ Opens the Ngrok Tunnel.
 *   ✅ Starts the Supabase Database.
+*   ✅ Starts the **Migration Watcher** (monitors `lovable/todo-sanctuary/db/migrations/`).
 *   ✅ Prints your "Secret Keys" to the screen.
 
-### Phase 3: Verify It Worked
+### Phase 4: Verify It Worked
 Once the script stops scrolling, check these links:
 
 *   **Web App**: [http://localhost:8000](http://localhost:8000) (You should see the app loading)
@@ -55,6 +108,110 @@ Once the script stops scrolling, check these links:
 
 ---
 
+## 🔄 Migration Automation System
+
+This is the **core automation** of the project. When you create a new migration in Lovable, the entire pipeline runs automatically — no manual steps needed.
+
+### How It Works (End-to-End Flow)
+
+```
+┌──────────────┐     git pull / paste      ┌──────────────────────────────────┐
+│   Lovable    │  ──────────────────────►   │  lovable/todo-sanctuary/         │
+│   (Cloud)    │   generates .sql file     │  db/migrations/                  │
+└──────────────┘                           │  📄 new_migration.sql            │
+                                           └──────────┬───────────────────────┘
+                                                      │
+                                          watch_migrations.ps1 detects it
+                                                      │
+                                           ┌──────────▼───────────────────────┐
+                                           │  Step 1: COPY                    │
+                                           │  Copy .sql → supabase/migrations │
+                                           └──────────┬───────────────────────┘
+                                                      │
+                                           ┌──────────▼───────────────────────┐
+                                           │  Step 2: SCAFFOLD UI             │
+                                           │  scaffold_ui.js reads the SQL,   │
+                                           │  detects ADD COLUMN, and auto-   │
+                                           │  updates index.html, app.js,     │
+                                           │  and todoService.js              │
+                                           └──────────┬───────────────────────┘
+                                                      │
+                                           ┌──────────▼───────────────────────┐
+                                           │  Step 3: APPLY TO DB             │
+                                           │  Runs the SQL directly on the    │
+                                           │  local Postgres via Docker exec  │
+                                           └──────────────────────────────────┘
+```
+
+### Step-by-Step Breakdown
+
+#### 1. Migration Watcher (`scripts/watch_migrations.ps1`)
+
+This PowerShell script runs in the background and **polls** the `lovable/todo-sanctuary/db/migrations/` folder every 2 seconds for new `.sql` files.
+
+When a new file is detected, it:
+1.  **Copies** the file to `supabase/migrations/` (so Supabase knows about it).
+2.  **Triggers** the UI scaffolding script (`scaffold_ui.js`).
+3.  **Applies** the SQL directly to the running Postgres database via `docker exec`.
+
+#### 2. UI Scaffolding (`scripts/scaffold_ui.js`)
+
+This Node.js script **automatically updates the frontend** when a new column is added to the `todos` table. It works using a **marker-based injection** system.
+
+**What it does:**
+- Parses the migration SQL for `ALTER TABLE todos ADD COLUMN` statements.
+- If it finds one, it injects the following into the frontend files:
+
+| File | What Gets Added |
+|---|---|
+| `web/index.html` | A new `<input>` field for the column |
+| `web/app.js` | A `getElementById` selector, data extraction, and clearing logic |
+| `web/services/todoService.js` | A new parameter in `createTodo()` and the JSON payload |
+
+**How the markers work:**
+
+The frontend files contain special comment markers like:
+```html
+<!-- DYNAMIC_INPUT_FIELDS -->
+```
+```javascript
+// DYNAMIC_ELEMENT_SELECTORS
+// DYNAMIC_DATA_EXTRACTION
+// DYNAMIC_DATA_CLEARING
+/* DYNAMIC_PAYLOAD_FIELDS */
+```
+
+The scaffold script finds these markers and injects the new code **just before** them, then writes the marker back. This way, the next migration can inject code at the same spot.
+
+> **Note:** The scaffolder only handles `ADD COLUMN` statements on the `todos` table. Other SQL operations (like `CREATE TABLE`) are applied to the DB but don't trigger UI changes.
+
+#### 3. Database Application
+
+The SQL is applied instantly via Docker:
+```powershell
+docker exec -i supabase_db_local-ai-studio-ngrok-demo psql -U postgres -c "<sql>"
+```
+
+No Supabase restart is needed — the column appears immediately in the database.
+
+---
+
+## 📝 Creating Migrations in Lovable
+
+To create a new migration via **Lovable AI**, use the prompts below (also saved in `prompts_used_in_migrations.txt`).
+
+> **Important:** Lovable creates files inside its own project. After Lovable generates the migration, either `git pull` in the `lovable/todo-sanctuary` folder, or manually paste the file into `lovable/todo-sanctuary/db/migrations/`. The watcher will pick it up automatically.
+
+### Recommended Prompts - check file prompts_used_in_migrations.txt
+
+
+```
+
+### Migration File Naming Convention
+
+Use this format: `YYYYMMDDHHMMSS_description.sql`
+
+Example: `20260213105000_add_due_date_column.sql`
 
 ---
 
@@ -68,6 +225,29 @@ To keep your secrets safe, we do **not** upload your API keys to GitHub.
 **Tools**:
 *   `.\start_dev.ps1`: Automatically generates `config.js` for you.
 *   If you need to setup manually (without the script), copy `.example` to `.js` and fill in your keys.
+
+---
+
+
+---
+
+## 🛑 Stopping Safely (Don't lose your data!)
+
+When you are done for the day, **DO NOT** just close the terminal or delete Docker containers manually. This can cause data loss.
+
+**Run this command:**
+```powershell
+.\stop_dev.ps1
+```
+
+This will:
+*   ✅ Stop Supabase safely (saving your data).
+*   ✅ Stop the Web Server and Ngrok.
+
+**Next Morning:**
+1.  Open Docker Desktop.
+2.  Run `.\start_dev.ps1`.
+3.  Your data will still be there!
 
 ---
 

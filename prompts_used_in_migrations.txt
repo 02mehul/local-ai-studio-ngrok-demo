@@ -1,0 +1,40 @@
+Prompt 1 — Simple column addition (natural language)
+
+Please create a Supabase migration SQL file that ADDS a column to the EXISTING todos table. 
+Do not create the table again. The migration should: Add a column named description of type text to the todos table.
+Make it nullable (optional).
+
+
+Prompt 2 — Specific file path + content
+
+Please create a new file at supabase/migrations/20260213103000_add_description.sql. 
+Put this content in the file: sql ALTER TABLE todos ADD COLUMN IF NOT EXISTS description text; 
+Also, please update the frontend code to display this new description field in the Todo items.
+
+
+Prompt 3 - Precise control (recommended for reliability)
+
+Create a folder db/migrations.
+Create a new file db/migrations/20260213103000_add_description.sql with exactly:
+ALTER TABLE public.todos ADD COLUMN IF NOT EXISTS description text;
+Do not run anything, just add the file.
+
+
+Prompt 4 — Full example with timestamp
+
+Create a new migration file.
+
+Create a folder db/migrations if it does not exist.
+
+Create a NEW file at:
+
+db/migrations/20260213104000_add_created_at_column.sql
+
+Put exactly this SQL inside:
+
+ALTER TABLE public.todos
+ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
+
+Do not run anything.
+Do not modify previous migration files.
+Only create this new migration file.

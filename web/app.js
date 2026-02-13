@@ -1,13 +1,15 @@
 // Main App Logic
-import { todoService } from './services/todoService.js';
+import { todoService } from './services/todoService.js?v=3';
 import { CONFIG } from './config.js';
 
 const statusEl = document.getElementById('status-bar');
 const listEl = document.getElementById('todo-list');
 const inputEl = document.getElementById('new-todo');
+const descriptionEl = document.getElementById('new-description'); // Added description element
+const created_atEl = document.getElementById('new-created_at');
+// DYNAMIC_ELEMENT_SELECTORS
 const priorityEl = document.getElementById('new-priority');
 const addBtn = document.getElementById('add-btn');
-
 // Status Check (Visual only)
 function updateStatus() {
     if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_KEY) {
@@ -38,8 +40,23 @@ function renderTodos(todos) {
         // Optimization: don't await the toggle for UI responsiveness (optimistic could be better but keep simple)
         checkbox.onclick = () => toggleTodo(todo.id, !todo.done);
 
+        const contentDiv = document.createElement('div');
+        contentDiv.style.display = 'inline-block';
+        contentDiv.style.verticalAlign = 'top';
+
         const span = document.createElement('span');
         span.textContent = todo.title;
+        contentDiv.appendChild(span);
+
+        // Display Description if exists
+        if (todo.description) {
+            const descSpan = document.createElement('div');
+            descSpan.textContent = todo.description;
+            descSpan.style.fontSize = '0.85em';
+            descSpan.style.color = '#666';
+            descSpan.style.marginTop = '2px';
+            contentDiv.appendChild(descSpan);
+        }
 
         if (todo.priority > 0) {
             const badge = document.createElement('span');
@@ -57,10 +74,11 @@ function renderTodos(todos) {
         const delBtn = document.createElement('button');
         delBtn.textContent = 'X';
         delBtn.style.marginLeft = '10px';
+        delBtn.style.verticalAlign = 'top';
         delBtn.onclick = () => deleteTodo(todo.id);
 
         li.appendChild(checkbox);
-        li.appendChild(span);
+        li.appendChild(contentDiv); // Use contentDiv instead of span directly
         li.appendChild(delBtn); // Added delete button
         listEl.appendChild(li);
     });
@@ -87,9 +105,19 @@ async function addTodo() {
         const priorityVal = priorityEl ? priorityEl.value : '0';
         console.log('Selected Priority Raw:', priorityVal);
         const priority = parseInt(priorityVal) || 0;
+
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        const created_at = created_atEl ? created_atEl.value.trim() : '';
+        // DYNAMIC_DATA_EXTRACTION
+        console.log('CAPTURED DESCRIPTION:', description); // DEBUG LOG
+
         console.log('Sending Priority:', priority);
-        await todoService.createTodo(title, priority);
+        await todoService.createTodo(title, priority, description, created_at);
+
         inputEl.value = '';
+        if (descriptionEl) descriptionEl.value = '';
+        if (created_atEl) created_atEl.value = '';
+        // DYNAMIC_DATA_CLEARING
         priorityEl.value = '0';
         fetchTodos();
     } catch (e) {

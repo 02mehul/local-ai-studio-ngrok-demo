@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local AI Studio Demo</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=4">
 </head>
+
 <body>
     <div class="container">
         <h1>Local AI Agent Demo</h1>
-        
+
         <div class="status-bar" id="status-bar">
             Connecting...
         </div>
 
         <div class="add-todo">
             <input type="text" id="new-todo" placeholder="What needs to be done?">
+            <input type="text" id="new-description" placeholder="Description (optional)">
+            <input type="text" id="new-created_at" placeholder="created_at (optional)">
+            <!-- DYNAMIC_INPUT_FIELDS -->
             <select id="new-priority" title="Priority">
                 <option value="0">Normal</option>
                 <option value="1">Low</option>
@@ -29,6 +34,7 @@
             <!-- Todos will appear here -->
         </ul>
     </div>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=4"></script>
 </body>
+
 </html>

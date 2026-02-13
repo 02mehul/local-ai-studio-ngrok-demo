@@ -54,11 +54,12 @@ export class TodoService {
         return this._fetch(`${API_ENDPOINTS.TODOS}?select=*&order=priority.desc,id.desc`);
     }
 
-    async createTodo(title, priority = 0) {
+    async createTodo(title, priority = 0, description = '', created_at = '') {
+        console.log('SERVICE RECEIVED DESCRIPTION:', description); // DEBUG LOG
         // POST /rest/v1/todos
         return this._fetch(API_ENDPOINTS.TODOS, {
             method: 'POST',
-            body: JSON.stringify({ title, done: false, priority })
+            body: JSON.stringify({ title, done: false, priority, description, created_at /* DYNAMIC_PAYLOAD_FIELDS */ })
         });
     }
 

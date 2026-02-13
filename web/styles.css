@@ -1,8 +1,126 @@
-body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-.container { border: 1px solid #ccc; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.status-bar { margin-bottom: 1rem; font-weight: bold; font-size: 0.9em; }
-.add-todo { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-#new-todo { flex: 1; padding: 0.5rem; }
-ul { list-style: none; padding: 0; }
-li { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
-li.done span { text-decoration: line-through; color: #888; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    background-color: #f9fafb;
+    color: #333;
+}
+
+.container {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+h1 {
+    color: #111827;
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.status-bar {
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 0.9em;
+    padding: 0.5rem;
+    background: #f3f4f6;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* Grid Layout for Form */
+.add-todo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 2rem;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Input Styling */
+input[type="text"], select {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease-in-out;
+}
+
+input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Specific Field Layouts */
+#new-todo {
+    grid-column: 1 / -1; /* Title spans full width */
+}
+
+/* Button Styling */
+#add-btn {
+    grid-column: 1 / -1; /* Button spans full width */
+    padding: 12px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    margin-top: 0.5rem;
+}
+
+#add-btn:hover {
+    background-color: #2563eb;
+}
+
+/* List Styling */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    background: white;
+    transition: background 0.1s;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+li:hover {
+    background: #fefefe;
+}
+
+li.done span {
+    text-decoration: line-through;
+    color: #9ca3af;
+}
+
+li button {
+    margin-left: auto; /* Push delete button to right */
+    padding: 4px 8px;
+    background: #fee2e2;
+    color: #ef4444;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+li button:hover {
+    background: #fecaca;
+}
